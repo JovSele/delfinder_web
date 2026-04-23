@@ -6,6 +6,7 @@
 <title>DealFinder – Investori tieto dealy vidia. Ty zatiaľ nie.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<script src="https://gumroad.com/js/gumroad.js"></script>
 <style>
   :root {
     --bg: #080809;
@@ -711,7 +712,7 @@
   <div class="logo">Deal<span>Finder</span></div>
   <div class="nav-right">
     <a href="#pricing" class="nav-link">Cenník</a>
-    <button class="nav-cta" onclick="openModal(event)">Pošli mi prvý deal →</button>
+    <a class="nav-cta" href="https://dealfinderalerts.gumroad.com/l/pwcgi" data-gumroad-overlay-checkout="true">Pošli mi prvý deal →</a>
   </div>
 </nav>
 
@@ -751,10 +752,10 @@
         <li>Zrušiteľné kedykoľvek, žiadne záväzky</li>
       </ul>
 
-      <button class="btn-pay" onclick="openModal(event)">
+      <a class="btn-pay" href="https://dealfinderalerts.gumroad.com/l/pwcgi" data-gumroad-overlay-checkout="true" style="display:block;text-align:center;text-decoration:none;">
         Pošli mi prvý deal →
-      </button>
-      <p class="pay-guarantee">🔒 Stripe · zabezpečená platba</p>
+      </a>
+      <p class="pay-guarantee">🔒 Gumroad · zabezpečená platba</p>
 
       <div class="live-counter">
         <span class="counter-num" id="buyerCount">23</span>
@@ -930,7 +931,7 @@
         <li>SK + CZ trh</li>
         <li>Filtrovanie lokalít</li>
       </ul>
-      <button class="btn-accent" onclick="openModal(event)">Pošli mi prvý deal →</button>
+      <a class="btn-accent" href="https://dealfinderalerts.gumroad.com/l/pwcgi" data-gumroad-overlay-checkout="true" style="display:block;text-align:center;text-decoration:none;padding:12px;">Pošli mi prvý deal →</a>
     </div>
 
     <div class="plan">
@@ -944,7 +945,7 @@
         <li>Export CSV / API prístup</li>
         <li>Dedikovaný Discord</li>
       </ul>
-      <button class="btn-outline" onclick="openModal(event)">Chcem výhodu</button>
+      <a class="btn-outline" href="https://dealfinderalerts.gumroad.com/l/pwcgi" data-gumroad-overlay-checkout="true" style="display:block;text-align:center;text-decoration:none;padding:12px;">Chcem výhodu</a>
     </div>
   </div>
 </section>
@@ -957,9 +958,9 @@
     <span class="green">Dnes to zastavíš.</span>
   </h2>
   <p>Prvý mesiac za €9. Zrušíš kedykoľvek. Žiadne výhovorky.</p>
-  <button class="final-btn" onclick="openModal(event)">
+  <a class="final-btn" href="https://dealfinderalerts.gumroad.com/l/pwcgi" data-gumroad-overlay-checkout="true" style="text-decoration:none;">
     Pošli mi prvý deal →
-  </button>
+  </a>
 </div>
 
 <footer>
@@ -979,10 +980,10 @@
       <input type="text" class="modal-input" id="modalName" placeholder="Meno">
       <input type="email" class="modal-input" id="modalEmail" placeholder="tvoj@email.sk">
 
-      <button class="btn-pay" onclick="handleModalSubmit()">
+      <button class="btn-pay" id="modalSubmitBtn" onclick="handleModalSubmit()">
         Aktivovať prístup za €9 →
       </button>
-      <p class="modal-note">🔒 Platba cez Stripe · Dostaneš email s ďalšími krokmi</p>
+      <p class="modal-note">🔒 Bezpečné · Dostaneš email s ďalšími krokmi</p>
     </div>
 
     <div class="success-state" id="modalSuccess">
@@ -1009,18 +1010,58 @@
   }
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-  function handleModalSubmit() {
+  async function handleModalSubmit() {
     const name = document.getElementById('modalName').value.trim();
     const email = document.getElementById('modalEmail').value.trim();
-    if (!name) { document.getElementById('modalName').style.borderColor = 'rgba(255,60,60,0.5)'; document.getElementById('modalName').focus(); return; }
-    if (!email || !email.includes('@')) { document.getElementById('modalEmail').style.borderColor = 'rgba(255,60,60,0.5)'; document.getElementById('modalEmail').focus(); return; }
+    const btn = document.getElementById('modalSubmitBtn');
 
-    // TODO: Replace with Stripe Payment Link or backend call
-    console.log('Paid signup:', { name, email });
+    // Validation
+    if (!name) {
+      document.getElementById('modalName').style.borderColor = 'rgba(255,60,60,0.5)';
+      document.getElementById('modalName').focus();
+      return;
+    }
+    if (!email || !email.includes('@')) {
+      document.getElementById('modalEmail').style.borderColor = 'rgba(255,60,60,0.5)';
+      document.getElementById('modalEmail').focus();
+      return;
+    }
 
-    document.getElementById('modalForm').style.display = 'none';
-    document.getElementById('modalSuccess').style.display = 'block';
-    setTimeout(closeModal, 3000);
+    // Reset border colors
+    document.getElementById('modalName').style.borderColor = '';
+    document.getElementById('modalEmail').style.borderColor = '';
+
+    // Loading state
+    btn.textContent = 'Odosielam...';
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+
+    try {
+      const res = await fetch('https://formspree.io/f/mzdyknee', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, email })
+      });
+
+      if (res.ok) {
+        // Success
+        document.getElementById('modalForm').style.display = 'none';
+        document.getElementById('modalSuccess').style.display = 'block';
+        setTimeout(closeModal, 3500);
+      } else {
+        throw new Error('Formspree error');
+      }
+    } catch (err) {
+      // Error state
+      btn.textContent = 'Chyba – skús znova';
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.style.background = 'var(--accent2)';
+      btn.style.color = '#fff';
+    }
   }
 
   // Live buyer count animation
