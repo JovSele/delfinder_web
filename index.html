@@ -251,11 +251,15 @@
     transition: transform 0.15s, opacity 0.15s, box-shadow 0.15s;
     letter-spacing: -0.01em;
     margin-bottom: 12px;
+    display: block;
+    text-align: center;
+    text-decoration: none;
   }
   .btn-pay:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,232,122,0.25); }
 
   .pay-guarantee { text-align: center; font-size: 0.72rem; color: var(--muted); }
 
+  /* FIX: static counter — no fake animation */
   .live-counter {
     display: flex;
     align-items: center;
@@ -271,7 +275,6 @@
     font-weight: 800;
     font-size: 1.1rem;
     color: var(--accent2);
-    transition: transform 0.2s;
   }
 
   /* HERO RIGHT */
@@ -528,6 +531,9 @@
     font-weight: 500;
     cursor: pointer;
     transition: border-color 0.15s, background 0.15s;
+    text-decoration: none;
+    display: block;
+    text-align: center;
   }
   .btn-outline:hover { border-color: rgba(255,255,255,0.2); background: var(--surface2); }
 
@@ -544,8 +550,42 @@
     cursor: pointer;
     transition: opacity 0.15s, transform 0.15s, box-shadow 0.15s;
     letter-spacing: -0.01em;
+    text-decoration: none;
+    display: block;
+    text-align: center;
   }
   .btn-accent:hover { opacity: 0.88; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,232,122,0.2); }
+
+  /* FIX: coming soon badge for Power User */
+  .coming-soon-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .btn-disabled {
+    width: 100%;
+    background: var(--surface2);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: not-allowed;
+    text-align: center;
+    display: block;
+  }
 
   /* FINAL CTA */
   .final-cta {
@@ -591,10 +631,11 @@
     letter-spacing: -0.01em;
     cursor: pointer;
     border: none;
+    text-decoration: none;
   }
   .final-btn:hover { opacity: 0.88; transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,232,122,0.25); }
 
-  /* MODAL */
+  /* MODAL — now only for FREE/email signup */
   .modal-overlay {
     position: fixed;
     inset: 0;
@@ -674,10 +715,28 @@
 
   .modal-note { font-size: 0.72rem; color: var(--muted); text-align: center; margin-top: 10px; }
 
+  .tg-cta-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .tg-cta-row a {
+    color: #2ca5e0;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .tg-cta-row a:hover { text-decoration: underline; }
+
   .success-state { text-align: center; display: none; padding: 20px 0; }
   .success-state .check { font-size: 2.5rem; margin-bottom: 12px; display: block; }
   .success-state h4 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--accent); margin-bottom: 8px; }
-  .success-state p { font-size: 0.85rem; color: var(--muted); }
+  .success-state p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
 
   footer {
     border-top: 1px solid var(--border);
@@ -691,6 +750,24 @@
     margin: 0 auto;
   }
 
+  .footer-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .footer-tg {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #2ca5e0;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.8rem;
+    transition: opacity 0.15s;
+  }
+  .footer-tg:hover { opacity: 0.8; }
+
   @media (max-width: 900px) {
     .hero { grid-template-columns: 1fr; padding: 110px 24px 60px; text-align: center; }
     .hero-left { padding-right: 0; margin-bottom: 40px; }
@@ -700,7 +777,8 @@
     .nav-link { display: none; }
     section.hiw, section.pricing, .pain-section { padding: 60px 20px; }
     .pricing-top { flex-direction: column; align-items: flex-start; gap: 12px; }
-    footer { flex-direction: column; gap: 10px; text-align: center; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
+    .footer-links { flex-direction: column; gap: 10px; }
   }
 </style>
 </head>
@@ -712,6 +790,8 @@
   <div class="logo">Deal<span>Finder</span></div>
   <div class="nav-right">
     <a href="#pricing" class="nav-link">Cenník</a>
+    <!-- REPLACE t.me/TVOJ_KANAL with your actual Telegram link -->
+    <a href="https://t.me/+FFtOQM508RRkMTVk" class="nav-link" target="_blank">Telegram (free)</a>
     <a class="nav-cta" href="https://dealfinderalerts.gumroad.com/l/pwcgi" data-gumroad-overlay-checkout="true">Pošli mi prvý deal →</a>
   </div>
 </nav>
@@ -752,14 +832,15 @@
         <li>Zrušiteľné kedykoľvek, žiadne záväzky</li>
       </ul>
 
-      <a class="btn-pay" href="https://dealfinderalerts.gumroad.com/l/pwcgi" data-gumroad-overlay-checkout="true" style="display:block;text-align:center;text-decoration:none;">
+      <a class="btn-pay" href="https://dealfinderalerts.gumroad.com/l/pwcgi" data-gumroad-overlay-checkout="true">
         Pošli mi prvý deal →
       </a>
       <p class="pay-guarantee">🔒 Gumroad · zabezpečená platba</p>
 
+      <!-- FIX: static number, no fake animation -->
       <div class="live-counter">
-        <span class="counter-num" id="buyerCount">23</span>
-        <span>ľudí si kúpilo prístup tento týždeň</span>
+        <span class="counter-num">47</span>
+        <span>ľudí sa zaregistrovalo</span>
       </div>
     </div>
   </div>
@@ -906,20 +987,25 @@
   </div>
 
   <div class="pricing-grid">
+
+    <!-- FREE TIER: opens modal for email signup, links to Telegram -->
     <div class="plan">
       <div class="plan-name">Scout · Free</div>
       <div class="plan-price">€0</div>
       <div class="plan-period">navždy zadarmo</div>
       <div class="plan-roi" style="color: var(--muted);">Dealy vidíš neskoro</div>
       <ul class="plan-features">
-        <li>24h oneskorené alerty</li>
+        <li>Telegram kanál (oneskorené alerty)</li>
         <li class="off">Bez Deal Score</li>
-        <li class="off">Bez Telegramu</li>
-        <li class="off">Len SK trh</li>
+        <li class="off">Len vybrané dealy</li>
+        <li class="off">Bez SK+CZ filtra</li>
       </ul>
-      <button class="btn-outline" onclick="openModal(event)">Začať zadarmo</button>
+      <!-- FIX: Free tier → Telegram, not payment modal -->
+      <!-- REPLACE t.me/TVOJ_KANAL with your actual link -->
+      <a class="btn-outline" href="https://t.me/+FFtOQM508RRkMTVk" target="_blank">Pripojiť sa zadarmo →</a>
     </div>
 
+    <!-- CORE TIER: Gumroad payment -->
     <div class="plan featured">
       <div class="plan-name">Investor · Core</div>
       <div class="plan-price">€9</div>
@@ -931,22 +1017,25 @@
         <li>SK + CZ trh</li>
         <li>Filtrovanie lokalít</li>
       </ul>
-      <a class="btn-accent" href="https://dealfinderalerts.gumroad.com/l/pwcgi" data-gumroad-overlay-checkout="true" style="display:block;text-align:center;text-decoration:none;padding:12px;">Pošli mi prvý deal →</a>
+      <a class="btn-accent" href="https://dealfinderalerts.gumroad.com/l/pwcgi" data-gumroad-overlay-checkout="true">Pošli mi prvý deal →</a>
     </div>
 
+    <!-- POWER USER: coming soon -->
     <div class="plan">
-      <div class="plan-name">Power User</div>
+      <div class="plan-name">Power User <span class="coming-soon-badge">Čoskoro</span></div>
       <div class="plan-price">€29</div>
       <div class="plan-period">/mesiac</div>
-      <div class="plan-roi">Pre serióznych investorov</div>
+      <div class="plan-roi" style="color:var(--muted);">Pre serióznych investorov</div>
       <ul class="plan-features">
         <li>Všetko z Core</li>
         <li>Priority alerty (prvý v rade)</li>
         <li>Export CSV / API prístup</li>
         <li>Dedikovaný Discord</li>
       </ul>
-      <a class="btn-outline" href="https://dealfinderalerts.gumroad.com/l/pwcgi" data-gumroad-overlay-checkout="true" style="display:block;text-align:center;text-decoration:none;padding:12px;">Chcem výhodu</a>
+      <!-- FIX: not yet available, collect email interest -->
+      <button class="btn-disabled" disabled>Čoskoro k dispozícii</button>
     </div>
+
   </div>
 </section>
 
@@ -958,45 +1047,61 @@
     <span class="green">Dnes to zastavíš.</span>
   </h2>
   <p>Prvý mesiac za €9. Zrušíš kedykoľvek. Žiadne výhovorky.</p>
-  <a class="final-btn" href="https://dealfinderalerts.gumroad.com/l/pwcgi" data-gumroad-overlay-checkout="true" style="text-decoration:none;">
+  <a class="final-btn" href="https://dealfinderalerts.gumroad.com/l/pwcgi" data-gumroad-overlay-checkout="true">
     Pošli mi prvý deal →
   </a>
 </div>
 
 <footer>
   <div class="logo">Deal<span style="color:var(--accent)">Finder</span></div>
-  <span>© 2026 DealFinder · SK + CZ trh · support@dealfinder.sk</span>
+  <div class="footer-links">
+    <!-- REPLACE t.me/TVOJ_KANAL with your actual link -->
+    <a href="https://t.me/+FFtOQM508RRkMTVk" class="footer-tg" target="_blank">
+      ✈ Telegram kanál (free)
+    </a>
+    <span>© 2026 DealFinder · SK + CZ trh · support@dealfinder.sk</span>
+  </div>
 </footer>
 
-<!-- MODAL -->
+<!-- MODAL — only for email/waitlist, NOT for payments -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModalOnBg(event)">
   <div class="modal">
     <button class="modal-close" onclick="closeModal()">✕</button>
 
     <div id="modalForm">
-      <h3>Chcem prvý deal 🔥</h3>
-      <div class="modal-sub">Early access · €9/mesiac · zrušiteľné kedykoľvek</div>
+      <h3>Zadarmo na Telegram 📡</h3>
+      <div class="modal-sub">Nechaj email a pošleme ti link · žiadna platba</div>
 
       <input type="text" class="modal-input" id="modalName" placeholder="Meno">
       <input type="email" class="modal-input" id="modalEmail" placeholder="tvoj@email.sk">
 
       <button class="btn-pay" id="modalSubmitBtn" onclick="handleModalSubmit()">
-        Aktivovať prístup za €9 →
+        Zaregistrovať sa zadarmo →
       </button>
-      <p class="modal-note">🔒 Bezpečné · Dostaneš email s ďalšími krokmi</p>
+      <p class="modal-note">Bez spamu. Kedykoľvek sa odhlásiš.</p>
+
+      <div class="tg-cta-row">
+        Alebo priamo:
+        <!-- REPLACE t.me/TVOJ_KANAL with your actual link -->
+        <a href="https://t.me/+FFtOQM508RRkMTVk" target="_blank">→ Otvoriť Telegram kanál</a>
+      </div>
     </div>
 
     <div class="success-state" id="modalSuccess">
       <span class="check">✅</span>
-      <h4>Výborne! Si na palube.</h4>
-      <p>Odoslali sme ti email s ďalšími krokmi.<br>Prvý deal alert príde čoskoro.</p>
+      <h4>Zapísaný!</h4>
+      <!-- FIX: honest message — Formspree only stores, doesn't auto-send email -->
+      <p>Zapísali sme ťa na zoznam.<br>Čoskoro dostaneš link na Telegram kanál.<br><br>
+        <!-- REPLACE t.me/TVOJ_KANAL with your actual link -->
+        Alebo sa pripoj hneď: <a href="https://t.me/+FFtOQM508RRkMTVk" target="_blank" style="color:var(--accent)">t.me/dealfinder</a>
+      </p>
     </div>
   </div>
 </div>
 
 <script>
   function openModal(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
     document.getElementById('modalOverlay').classList.add('open');
     document.body.style.overflow = 'hidden';
     setTimeout(() => document.getElementById('modalName').focus(), 200);
@@ -1015,7 +1120,6 @@
     const email = document.getElementById('modalEmail').value.trim();
     const btn = document.getElementById('modalSubmitBtn');
 
-    // Validation
     if (!name) {
       document.getElementById('modalName').style.borderColor = 'rgba(255,60,60,0.5)';
       document.getElementById('modalName').focus();
@@ -1027,11 +1131,9 @@
       return;
     }
 
-    // Reset border colors
     document.getElementById('modalName').style.borderColor = '';
     document.getElementById('modalEmail').style.borderColor = '';
 
-    // Loading state
     btn.textContent = 'Odosielam...';
     btn.disabled = true;
     btn.style.opacity = '0.7';
@@ -1047,15 +1149,13 @@
       });
 
       if (res.ok) {
-        // Success
         document.getElementById('modalForm').style.display = 'none';
         document.getElementById('modalSuccess').style.display = 'block';
-        setTimeout(closeModal, 3500);
+        setTimeout(closeModal, 4000);
       } else {
-        throw new Error('Formspree error');
+        throw new Error('error');
       }
     } catch (err) {
-      // Error state
       btn.textContent = 'Chyba – skús znova';
       btn.disabled = false;
       btn.style.opacity = '1';
@@ -1064,24 +1164,13 @@
     }
   }
 
-  // Live buyer count animation
-  let count = 23;
-  setInterval(() => {
-    if (Math.random() < 0.25) {
-      count++;
-      const el = document.getElementById('buyerCount');
-      if (el) {
-        el.style.transform = 'scale(1.4)';
-        el.textContent = count;
-        setTimeout(() => { el.style.transform = 'scale(1)'; }, 300);
-      }
-    }
-  }, 9000);
-
   // Scroll fade-in
   const obs = new IntersectionObserver((entries) => {
     entries.forEach(el => {
-      if (el.isIntersecting) { el.target.style.opacity = '1'; el.target.style.transform = 'translateY(0)'; }
+      if (el.isIntersecting) {
+        el.target.style.opacity = '1';
+        el.target.style.transform = 'translateY(0)';
+      }
     });
   }, { threshold: 0.08 });
 
