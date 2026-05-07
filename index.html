@@ -1,1368 +1,972 @@
 <!DOCTYPE html>
-<html lang="sk">
+<html lang="cs">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DealFinder – Investori tieto dealy vidia. Ty zatiaľ nie.</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://gumroad.com/js/gumroad.js"></script>
-<style>
-  :root {
-    --bg: #07080a;
-    --surface: #0e0f12;
-    --surface2: #161719;
-    --surface3: #1d1e21;
-    --accent: #00e87a;
-    --accent-dim: rgba(0,232,122,0.08);
-    --accent2: #ff3c3c;
-    --accent2-dim: rgba(255,60,60,0.08);
-    --text: #eeeef0;
-    --text-secondary: #a0a0b0;
-    --text-dim: #606070;
-    --border: rgba(255,255,255,0.07);
-    --border-accent: rgba(0,232,122,0.18);
-
-    /* TYPE SCALE */
-    --font-display: 'Barlow Condensed', sans-serif;
-    --font-body: 'IBM Plex Sans', sans-serif;
-    --font-mono: 'IBM Plex Mono', monospace;
-  }
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-body);
-    font-size: 15px;
-    line-height: 1.6;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  /* Grain overlay */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 9999;
-  }
-
-  /* ─── TICKER ─── */
-  .ticker {
-    background: var(--accent2);
-    color: #fff;
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    padding: 8px 0;
-    text-align: center;
-    text-transform: uppercase;
-    position: relative;
-    z-index: 200;
-  }
-
-  /* ─── NAV ─── */
-  nav {
-    position: fixed;
-    top: 32px; left: 0; right: 0;
-    z-index: 100;
-    padding: 16px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(7,8,10,0.93);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
-  }
-
-  .logo {
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: 1.35rem;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-  }
-  .logo span { color: var(--accent); }
-
-  .nav-right { display: flex; align-items: center; gap: 20px; }
-  .nav-link {
-    color: var(--text-secondary);
-    font-size: 0.82rem;
-    font-weight: 400;
-    text-decoration: none;
-    letter-spacing: 0.01em;
-    transition: color 0.15s;
-  }
-  .nav-link:hover { color: var(--text); }
-
-  .nav-cta {
-    background: var(--accent);
-    color: #000;
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 0.85rem;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    padding: 9px 20px;
-    border-radius: 6px;
-    text-decoration: none;
-    transition: opacity 0.15s;
-    cursor: pointer;
-    border: none;
-  }
-  .nav-cta:hover { opacity: 0.85; }
-
-  /* ─── HERO ─── */
-  .hero {
-    min-height: 100vh;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    align-items: center;
-    padding: 130px 60px 60px;
-    position: relative;
-    max-width: 1300px;
-    margin: 0 auto;
-  }
-
-  .hero-glow {
-    position: absolute; top: 15%; left: -15%;
-    width: 900px; height: 700px;
-    background: radial-gradient(ellipse, rgba(0,232,122,0.055) 0%, transparent 60%);
-    pointer-events: none;
-  }
-
-  .hero-left { position: relative; z-index: 2; padding-right: 50px; }
-
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--accent2-dim);
-    border: 1px solid rgba(255,60,60,0.2);
-    color: var(--accent2);
-    font-family: var(--font-mono);
-    font-size: 0.66rem;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 5px 12px;
-    border-radius: 3px;
-    margin-bottom: 26px;
-    animation: fadeUp 0.5s ease both;
-  }
-  .hero-badge-dot {
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    background: var(--accent2);
-    animation: pulse 1.5s ease infinite;
-    flex-shrink: 0;
-  }
-
-  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.2} }
-
-  h1 {
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: clamp(3rem, 5.5vw, 5rem);
-    line-height: 0.95;
-    letter-spacing: 0.01em;
-    text-transform: uppercase;
-    margin-bottom: 26px;
-    animation: fadeUp 0.5s 0.08s ease both;
-  }
-  h1 em {
-    font-style: italic;
-    color: var(--accent2);
-    font-weight: 700;
-  }
-  h1 .green { color: var(--accent); }
-
-  .hero-sub {
-    font-size: 0.96rem;
-    color: var(--text-secondary);
-    max-width: 440px;
-    margin-bottom: 34px;
-    font-weight: 300;
-    line-height: 1.75;
-    animation: fadeUp 0.5s 0.16s ease both;
-    letter-spacing: 0.01em;
-  }
-  .hero-sub strong { color: var(--text); font-weight: 500; }
-
-  @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
-
-  /* ─── PAYMENT BOX ─── */
-  .payment-box {
-    background: var(--surface);
-    border: 1px solid var(--border-accent);
-    border-radius: 12px;
-    padding: 28px;
-    position: relative;
-    overflow: hidden;
-    animation: fadeUp 0.5s 0.24s ease both;
-  }
-  .payment-box::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  }
-
-  .pay-label {
-    font-family: var(--font-mono);
-    font-size: 0.62rem;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 14px;
-  }
-
-  .pay-price-row {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    margin-bottom: 4px;
-  }
-  .pay-price {
-    font-family: var(--font-display);
-    font-size: 3.6rem;
-    font-weight: 800;
-    line-height: 1;
-    letter-spacing: -0.01em;
-  }
-  .pay-period { color: var(--text-dim); font-size: 0.85rem; }
-  .pay-old {
-    text-decoration: line-through;
-    color: var(--text-dim);
-    font-size: 0.88rem;
-    font-family: var(--font-mono);
-  }
-
-  .pay-contrast {
-    font-size: 0.8rem;
-    color: var(--accent);
-    font-weight: 500;
-    margin-bottom: 20px;
-    font-family: var(--font-mono);
-  }
-
-  .pay-features {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 22px;
-  }
-  .pay-features li {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.875rem;
-    color: #b8b8c8;
-    letter-spacing: 0.005em;
-  }
-  .pay-features li::before {
-    content: '→';
-    color: var(--accent);
-    font-weight: 600;
-    flex-shrink: 0;
-    font-size: 0.8rem;
-  }
-
-  .btn-pay {
-    width: 100%;
-    background: var(--accent);
-    color: #000;
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: 1.05rem;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    border: none;
-    border-radius: 8px;
-    padding: 15px;
-    cursor: pointer;
-    transition: transform 0.15s, opacity 0.15s, box-shadow 0.15s;
-    margin-bottom: 10px;
-    display: block;
-    text-align: center;
-    text-decoration: none;
-  }
-  .btn-pay:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,232,122,0.2); }
-
-  .pay-guarantee {
-    text-align: center;
-    font-size: 0.69rem;
-    color: var(--text-dim);
-    font-family: var(--font-mono);
-    letter-spacing: 0.04em;
-  }
-
-  .live-counter {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border);
-    font-size: 0.78rem;
-    color: var(--text-dim);
-  }
-  .counter-num {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 1.2rem;
-    color: var(--accent2);
-    letter-spacing: 0.02em;
-  }
-
-  /* ─── HERO RIGHT – DEAL CARDS ─── */
-  .hero-right {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    animation: fadeUp 0.5s 0.32s ease both;
-  }
-
-  .proof-label {
-    font-family: var(--font-mono);
-    font-size: 0.63rem;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 4px;
-  }
-
-  .deal-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px 18px;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.2s, transform 0.2s;
-  }
-  .deal-card:hover { border-color: rgba(0,232,122,0.18); transform: translateX(3px); }
-
-  .deal-card.hot { border-color: rgba(0,232,122,0.25); }
-  .deal-card.hot::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 3px;
-    background: var(--accent);
-    border-radius: 2px 0 0 2px;
-  }
-
-  .deal-card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-
-  .deal-score-badge {
-    background: var(--accent-dim);
-    border: 1px solid rgba(0,232,122,0.2);
-    color: var(--accent);
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    font-weight: 500;
-    padding: 2px 9px;
-    border-radius: 3px;
-    letter-spacing: 0.04em;
-  }
-
-  .deal-time {
-    font-family: var(--font-mono);
-    font-size: 0.63rem;
-    color: var(--text-dim);
-  }
-
-  .deal-address {
-    font-weight: 500;
-    font-size: 0.88rem;
-    margin-bottom: 1px;
-    letter-spacing: 0.01em;
-  }
-  .deal-loc {
-    font-size: 0.72rem;
-    color: var(--text-dim);
-    margin-bottom: 11px;
-    font-family: var(--font-mono);
-    letter-spacing: 0.02em;
-  }
-
-  .deal-nums {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 6px;
-  }
-  .dn {
-    text-align: center;
-    background: var(--surface2);
-    border-radius: 6px;
-    padding: 9px 4px;
-  }
-  .dn-val {
-    font-family: var(--font-display);
-    font-size: 1rem;
-    font-weight: 700;
-    display: block;
-    letter-spacing: 0.01em;
-  }
-  .dn-val.g { color: var(--accent); }
-  .dn-lbl {
-    font-family: var(--font-mono);
-    font-size: 0.58rem;
-    color: var(--text-dim);
-    display: block;
-    margin-top: 2px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
-  .tg-alert {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 9px;
-    padding: 7px 10px;
-    background: rgba(44,165,224,0.07);
-    border-radius: 6px;
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    color: #6aafc8;
-    letter-spacing: 0.02em;
-  }
-  .tg-dot {
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    background: #2ca5e0;
-    flex-shrink: 0;
-    animation: pulse 1.5s ease infinite;
-  }
-
-  .sep { border: none; border-top: 1px solid var(--border); margin: 0; }
-
-  /* ─── PAIN ─── */
-  .pain-section {
-    padding: 80px 40px;
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-
-  .pain-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2px;
-    background: var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-  }
-
-  .pain-box { background: var(--surface); padding: 36px 32px; }
-  .pain-box.bad { background: rgba(255,60,60,0.02); }
-
-  .pain-box-label {
-    font-family: var(--font-mono);
-    font-size: 0.62rem;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-  .pain-box-label.red { color: var(--accent2); }
-  .pain-box-label.green { color: var(--accent); }
-
-  .pain-box h3 {
-    font-family: var(--font-display);
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 12px;
-    line-height: 1.1;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-  }
-  .pain-box p {
-    font-size: 0.88rem;
-    color: #9090a8;
-    line-height: 1.7;
-    font-weight: 300;
-  }
-
-  .timeline { display: flex; flex-direction: column; gap: 7px; margin-top: 18px; }
-  .tl-item { display: flex; align-items: center; gap: 12px; }
-  .tl-time {
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    font-weight: 500;
-    color: var(--text-dim);
-    width: 52px;
-    flex-shrink: 0;
-  }
-  .tl-bar { flex: 1; height: 5px; background: var(--surface2); border-radius: 100px; overflow: hidden; }
-  .tl-fill { height: 100%; border-radius: 100px; background: var(--accent2); }
-  .tl-who {
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    color: var(--text-dim);
-    width: 72px;
-    text-align: right;
-    flex-shrink: 0;
-  }
-  .tl-who.you { color: var(--accent); font-weight: 500; }
-
-  /* ─── HOW IT WORKS ─── */
-  section.hiw { padding: 80px 40px; max-width: 1100px; margin: 0 auto; }
-
-  .section-eyebrow {
-    font-family: var(--font-mono);
-    font-size: 0.62rem;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 10px;
-  }
-
-  .section-title {
-    font-family: var(--font-display);
-    font-size: clamp(2.2rem, 4vw, 3.2rem);
-    font-weight: 800;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    line-height: 1;
-    margin-bottom: 48px;
-    max-width: 500px;
-  }
-
-  .steps-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2px;
-    background: var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-  }
-
-  .step { background: var(--surface); padding: 30px 26px; position: relative; }
-  .step-num {
-    font-family: var(--font-display);
-    font-size: 4rem;
-    font-weight: 800;
-    color: rgba(255,255,255,0.03);
-    position: absolute;
-    top: 18px; right: 20px;
-    line-height: 1;
-    letter-spacing: -0.02em;
-  }
-  .step-icon { font-size: 1.5rem; margin-bottom: 12px; display: block; }
-  .step h3 {
-    font-family: var(--font-display);
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    line-height: 1.1;
-  }
-  .step p {
-    font-size: 0.86rem;
-    color: #9090a8;
-    line-height: 1.7;
-    font-weight: 300;
-  }
-
-  /* ─── PRICING ─── */
-  section.pricing { padding: 80px 40px; max-width: 1100px; margin: 0 auto; }
-
-  .pricing-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 36px;
-  }
-  .pricing-contrast {
-    font-size: 0.84rem;
-    color: var(--text-secondary);
-    text-align: right;
-    max-width: 280px;
-    line-height: 1.6;
-    font-weight: 300;
-  }
-  .pricing-contrast strong { color: var(--accent); font-weight: 500; }
-
-  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-
-  .plan {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 28px 24px;
-    position: relative;
-    transition: transform 0.2s;
-  }
-  .plan:hover { transform: translateY(-3px); }
-  .plan.featured {
-    border-color: var(--border-accent);
-    background: linear-gradient(170deg, rgba(0,232,122,0.04), var(--surface));
-  }
-  .plan.featured::before {
-    content: 'NAJLEPŠIA HODNOTA';
-    position: absolute;
-    top: -10px; left: 50%;
-    transform: translateX(-50%);
-    background: var(--accent);
-    color: #000;
-    font-family: var(--font-mono);
-    font-size: 0.56rem;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    padding: 3px 12px;
-    border-radius: 100px;
-    white-space: nowrap;
-  }
-
-  .plan-name {
-    font-family: var(--font-mono);
-    font-size: 0.62rem;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 10px;
-  }
-  .plan-price {
-    font-family: var(--font-display);
-    font-size: 2.6rem;
-    font-weight: 800;
-    line-height: 1;
-    margin-bottom: 3px;
-    letter-spacing: -0.01em;
-  }
-  .plan-period {
-    font-family: var(--font-mono);
-    color: var(--text-dim);
-    font-size: 0.7rem;
-    margin-bottom: 5px;
-    letter-spacing: 0.02em;
-  }
-  .plan-roi {
-    font-size: 0.76rem;
-    color: var(--accent);
-    font-weight: 500;
-    margin-bottom: 20px;
-    line-height: 1.4;
-  }
-
-  .plan-features {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-    margin-bottom: 22px;
-    font-size: 0.85rem;
-    color: #9898b0;
-  }
-  .plan-features li { display: flex; align-items: center; gap: 8px; letter-spacing: 0.005em; }
-  .plan-features li::before { content: '→'; color: var(--accent); font-size: 0.78rem; }
-  .plan-features li.off { color: var(--text-dim); }
-  .plan-features li.off::before { content: '–'; color: var(--text-dim); }
-
-  .btn-outline {
-    width: 100%;
-    background: transparent;
-    color: var(--text-secondary);
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    padding: 11px;
-    font-family: var(--font-body);
-    font-size: 0.82rem;
-    font-weight: 400;
-    cursor: pointer;
-    transition: border-color 0.15s, background 0.15s, color 0.15s;
-    text-decoration: none;
-    display: block;
-    text-align: center;
-    letter-spacing: 0.01em;
-  }
-  .btn-outline:hover { border-color: rgba(255,255,255,0.15); background: var(--surface2); color: var(--text); }
-
-  .btn-accent {
-    width: 100%;
-    background: var(--accent);
-    color: #000;
-    border: none;
-    border-radius: 7px;
-    padding: 12px;
-    font-family: var(--font-display);
-    font-size: 1rem;
-    font-weight: 800;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: opacity 0.15s, transform 0.15s, box-shadow 0.15s;
-    text-decoration: none;
-    display: block;
-    text-align: center;
-  }
-  .btn-accent:hover { opacity: 0.88; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,232,122,0.18); }
-
-  .coming-soon-badge {
-    display: inline-block;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-family: var(--font-mono);
-    font-size: 0.55rem;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 2px 7px;
-    border-radius: 3px;
-    margin-left: 6px;
-    vertical-align: middle;
-  }
-
-  .btn-disabled {
-    width: 100%;
-    background: var(--surface2);
-    color: var(--text-dim);
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    padding: 12px;
-    font-family: var(--font-body);
-    font-size: 0.82rem;
-    font-weight: 400;
-    cursor: not-allowed;
-    text-align: center;
-    display: block;
-    letter-spacing: 0.01em;
-  }
-
-  /* ─── FINAL CTA ─── */
-  .final-cta {
-    text-align: center;
-    padding: 100px 24px;
-    position: relative;
-    overflow: hidden;
-  }
-  .final-cta::before {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 50%;
-    transform: translateX(-50%);
-    width: 700px; height: 350px;
-    background: radial-gradient(ellipse, rgba(0,232,122,0.07) 0%, transparent 65%);
-    pointer-events: none;
-  }
-
-  .final-cta h2 {
-    font-family: var(--font-display);
-    font-size: clamp(2.5rem, 6vw, 5rem);
-    font-weight: 800;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    margin-bottom: 14px;
-    line-height: 0.95;
-  }
-  .final-cta h2 em { font-style: italic; color: var(--accent2); font-weight: 700; }
-  .final-cta h2 .green { color: var(--accent); }
-  .final-cta p {
-    color: var(--text-dim);
-    margin-bottom: 36px;
-    font-size: 0.9rem;
-    font-weight: 300;
-    letter-spacing: 0.02em;
-  }
-
-  .final-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--accent);
-    color: #000;
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: 1.1rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    padding: 16px 36px;
-    border-radius: 8px;
-    transition: opacity 0.15s, transform 0.15s, box-shadow 0.15s;
-    cursor: pointer;
-    border: none;
-    text-decoration: none;
-  }
-  .final-btn:hover { opacity: 0.88; transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,232,122,0.22); }
-
-  /* ─── MODAL ─── */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.85);
-    backdrop-filter: blur(10px);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-  }
-  .modal-overlay.open { opacity: 1; pointer-events: all; }
-
-  .modal {
-    background: var(--surface);
-    border: 1px solid var(--border-accent);
-    border-radius: 16px;
-    padding: 38px;
-    max-width: 420px;
-    width: 100%;
-    position: relative;
-    transform: translateY(18px);
-    transition: transform 0.2s;
-  }
-  .modal-overlay.open .modal { transform: translateY(0); }
-  .modal::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-    border-radius: 16px 16px 0 0;
-  }
-
-  .modal-close {
-    position: absolute;
-    top: 14px; right: 16px;
-    background: transparent;
-    border: none;
-    color: var(--text-dim);
-    font-size: 1rem;
-    cursor: pointer;
-    transition: color 0.15s;
-    padding: 4px;
-    line-height: 1;
-  }
-  .modal-close:hover { color: var(--text); }
-
-  .modal h3 {
-    font-family: var(--font-display);
-    font-size: 1.8rem;
-    font-weight: 800;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    margin-bottom: 5px;
-    line-height: 1;
-  }
-  .modal-sub {
-    font-size: 0.82rem;
-    color: var(--text-secondary);
-    margin-bottom: 22px;
-    font-weight: 300;
-  }
-
-  .modal-input {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 13px 14px;
-    color: var(--text);
-    font-family: var(--font-body);
-    font-size: 0.88rem;
-    outline: none;
-    margin-bottom: 9px;
-    transition: border-color 0.2s;
-    display: block;
-  }
-  .modal-input:focus { border-color: rgba(0,232,122,0.35); }
-  .modal-input::placeholder { color: var(--text-dim); }
-
-  .modal-note {
-    font-family: var(--font-mono);
-    font-size: 0.63rem;
-    color: var(--text-dim);
-    text-align: center;
-    margin-top: 9px;
-    letter-spacing: 0.04em;
-  }
-
-  .tg-cta-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 14px;
-    padding-top: 14px;
-    border-top: 1px solid var(--border);
-    font-size: 0.78rem;
-    color: var(--text-dim);
-  }
-  .tg-cta-row a { color: #2ca5e0; text-decoration: none; font-weight: 500; }
-  .tg-cta-row a:hover { text-decoration: underline; }
-
-  .success-state { text-align: center; display: none; padding: 20px 0; }
-  .success-state .check { font-size: 2.2rem; margin-bottom: 10px; display: block; }
-  .success-state h4 {
-    font-family: var(--font-display);
-    font-size: 1.6rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 8px;
-    letter-spacing: 0.02em;
-  }
-  .success-state p { font-size: 0.84rem; color: var(--text-secondary); line-height: 1.7; font-weight: 300; }
-
-  /* ─── FOOTER ─── */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 22px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1300px;
-    margin: 0 auto;
-  }
-
-  .footer-links {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-  }
-  .footer-copy {
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    color: var(--text-dim);
-    letter-spacing: 0.03em;
-  }
-  .footer-tg {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: #2ca5e0;
-    text-decoration: none;
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    transition: opacity 0.15s;
-  }
-  .footer-tg:hover { opacity: 0.75; }
-
-  /* ─── RESPONSIVE ─── */
-  @media (max-width: 900px) {
-    .hero { grid-template-columns: 1fr; padding: 110px 24px 60px; text-align: center; }
-    .hero-left { padding-right: 0; margin-bottom: 40px; }
-    .hero-sub { margin-left: auto; margin-right: auto; }
-    .steps-grid, .pricing-grid, .pain-grid { grid-template-columns: 1fr; }
-    nav { padding: 14px 20px; }
-    .nav-link { display: none; }
-    section.hiw, section.pricing, .pain-section { padding: 60px 20px; }
-    .pricing-top { flex-direction: column; align-items: flex-start; gap: 12px; }
-    footer { flex-direction: column; gap: 12px; text-align: center; }
-    .footer-links { flex-direction: column; gap: 8px; }
-    h1 { font-size: clamp(2.6rem, 8vw, 4rem); }
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DealFinder — Datová výhoda pro realitní investory</title>
+  <meta name="description" content="DealFinder sleduje realitní trh v reálném čase a upozorňuje investory na podtržní příležitosti." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1e;
+      --bg2: #0f172a;
+      --bg3: #111827;
+      --card: #151f35;
+      --card2: #1a2540;
+      --border: rgba(255,255,255,0.08);
+      --accent: #f97316;
+      --accent-dark: #ea580c;
+      --accent-glow: rgba(249,115,22,0.2);
+      --green: #22c55e;
+      --green-bg: rgba(34,197,94,0.1);
+      --yellow: #f59e0b;
+      --red: #ef4444;
+      --text: #f1f5f9;
+      --muted: #64748b;
+      --muted2: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 28px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 22px;
+      letter-spacing: -0.04em;
+      color: white;
+    }
+    .logo span { color: var(--accent); }
+    .nav-pill {
+      border: 1px solid rgba(249,115,22,0.35);
+      background: rgba(249,115,22,0.08);
+      color: #fed7aa;
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .nav-pill:hover { background: rgba(249,115,22,0.15); }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 20px 20px 100px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px; right: -200px;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(249,115,22,0.12) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -100px; left: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(99,102,241,0.07) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(249,115,22,0.12);
+      border: 1px solid rgba(249,115,22,0.3);
+      color: #fed7aa;
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 24px;
+    }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(44px, 5.5vw, 72px);
+      font-weight: 800;
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+      margin-bottom: 24px;
+      color: white;
+    }
+    h1 em { font-style: normal; color: var(--accent); }
+
+    .hero-desc {
+      font-size: 18px;
+      color: var(--muted2);
+      max-width: 520px;
+      margin-bottom: 20px;
+      line-height: 1.7;
+    }
+
+    .tg-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--muted2);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      margin-bottom: 32px;
+    }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent);
+      color: white;
+      padding: 14px 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 15px;
+      text-decoration: none;
+      box-shadow: 0 12px 32px rgba(249,115,22,0.28);
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { background: var(--accent-dark); transform: translateY(-1px); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--muted2);
+      padding: 14px 24px;
+      border-radius: 12px;
+      font-weight: 500;
+      font-size: 15px;
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.3); color: white; }
+
+    /* ── HERO DEAL CARD ── */
+    .hero-card-wrap {
+      position: relative;
+    }
+    .hero-card-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -20px;
+      background: radial-gradient(circle at 50% 50%, rgba(249,115,22,0.08), transparent 70%);
+      border-radius: 32px;
+    }
+
+    .tg-preview {
+      background: #17212b;
+      border-radius: 20px;
+      padding: 20px;
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+      position: relative;
+      transform: rotate(-1deg);
+    }
+
+    .tg-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      margin-bottom: 16px;
+    }
+    .tg-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 16px;
+    }
+    .tg-name { font-weight: 600; font-size: 15px; color: white; }
+    .tg-sub { font-size: 12px; color: #5d7a8a; }
+
+    .tg-bubble {
+      background: #1f3040;
+      border-radius: 12px 12px 12px 4px;
+      padding: 14px 16px;
+      margin-bottom: 8px;
+      font-size: 14px;
+      line-height: 1.65;
+      color: #c5d8e4;
+      white-space: pre-line;
+    }
+    .tg-bubble strong { color: white; }
+    .tg-bubble .deal-pct { font-size: 18px; font-weight: 700; color: var(--accent); }
+    .tg-bubble .price-row { font-size: 20px; font-weight: 700; color: white; margin: 6px 0; }
+    .tg-bubble .savings { color: var(--green); font-weight: 600; }
+    .tg-bubble .check { color: var(--green); }
+    .tg-bubble .warn { color: var(--yellow); }
+    .tg-bubble .conf-green { color: var(--green); font-size: 12px; }
+    .tg-bubble .conf-yellow { color: var(--yellow); font-size: 12px; }
+    .tg-bubble .conf-red { color: var(--red); font-size: 12px; }
+    .tg-time { font-size: 11px; color: #3d6070; text-align: right; margin-top: 4px; }
+
+    /* ── SECTION GENERAL ── */
+    section { padding: 80px 20px; }
+    .container { max-width: 1120px; margin: 0 auto; }
+
+    .eyebrow {
+      color: var(--accent);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+    h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(30px, 4vw, 50px);
+      font-weight: 800;
+      letter-spacing: -0.05em;
+      line-height: 1.05;
+      margin-bottom: 16px;
+      color: white;
+    }
+    .section-lead {
+      font-size: 18px;
+      color: var(--muted2);
+      max-width: 640px;
+      line-height: 1.7;
+    }
+
+    /* ── LIVE DEALS SECTION ── */
+    .deals-section { background: var(--bg2); }
+
+    .deals-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.25);
+      color: #86efac;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .deals-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .deal-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      transition: transform 0.2s, border-color 0.2s;
+      cursor: pointer;
+    }
+    .deal-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(249,115,22,0.25);
+    }
+    .deal-card.hot { border-color: rgba(249,115,22,0.2); }
+
+    .deal-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .deal-pct-badge {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 22px;
+      color: var(--accent);
+      letter-spacing: -0.04em;
+    }
+    .deal-pct-badge.big { font-size: 26px; }
+
+    .conf-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-weight: 500;
+    }
+    .conf-green { background: rgba(34,197,94,0.1); color: #86efac; border: 1px solid rgba(34,197,94,0.2); }
+    .conf-yellow { background: rgba(245,158,11,0.1); color: #fcd34d; border: 1px solid rgba(245,158,11,0.2); }
+    .conf-red { background: rgba(239,68,68,0.08); color: #fca5a5; border: 1px solid rgba(239,68,68,0.15); }
+    .conf-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+    .deal-type { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .deal-title { font-size: 16px; font-weight: 600; color: white; margin-bottom: 12px; line-height: 1.3; }
+
+    .deal-price { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: white; letter-spacing: -0.04em; margin-bottom: 2px; }
+    .deal-savings { font-size: 13px; color: var(--green); font-weight: 600; margin-bottom: 14px; }
+
+    .deal-meter {
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      font-size: 13px;
+    }
+    .deal-meter-row { display: flex; justify-content: space-between; color: var(--muted2); margin-bottom: 4px; }
+    .meter-bar { height: 4px; border-radius: 999px; background: rgba(255,255,255,0.08); overflow: hidden; }
+    .meter-fill { height: 100%; border-radius: 999px; background: var(--accent); }
+
+    .deal-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .deal-tag {
+      font-size: 12px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+    .tag-good { background: rgba(34,197,94,0.1); color: #86efac; }
+    .tag-warn { background: rgba(245,158,11,0.08); color: #fcd34d; }
+
+    .deal-location {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .deals-more {
+      text-align: center;
+      padding: 24px;
+      border: 1px dashed rgba(255,255,255,0.1);
+      border-radius: 16px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .deals-more strong { color: var(--muted2); }
+
+    /* ── HOW IT WORKS ── */
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 40px;
+    }
+    .how-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+    }
+    .how-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 42px;
+      font-weight: 800;
+      color: var(--accent);
+      opacity: 0.3;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+    .how-card h4 { font-size: 18px; font-weight: 600; color: white; margin-bottom: 10px; }
+    .how-card p { font-size: 15px; color: var(--muted2); line-height: 1.65; }
+
+    /* ── COMPARISON ── */
+    .comp-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 40px;
+    }
+    .comp-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+    }
+    .comp-box.highlight { border-color: rgba(249,115,22,0.25); background: rgba(249,115,22,0.04); }
+    .comp-box h4 {
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .comp-box h4 .label-chip {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .chip-old { background: rgba(239,68,68,0.1); color: #fca5a5; }
+    .chip-new { background: rgba(249,115,22,0.15); color: #fed7aa; }
+
+    .comp-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 15px;
+      color: var(--muted2);
+      margin-bottom: 12px;
+    }
+    .comp-item .icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+    /* ── CTA ── */
+    .cta-section {
+      background: linear-gradient(135deg, #0a0f1e 0%, #111827 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px; height: 400px;
+      background: radial-gradient(ellipse, rgba(249,115,22,0.1) 0%, transparent 70%);
+    }
+    .cta-inner {
+      max-width: 560px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    .cta-inner h2 { margin-bottom: 14px; }
+    .cta-inner .section-lead { margin: 0 auto 32px; }
+
+    .urgency-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .urgency-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(249,115,22,0.1);
+      border: 1px solid rgba(249,115,22,0.25);
+      color: #fed7aa;
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .progress-wrap { margin: 0 auto 28px; max-width: 280px; }
+    .progress-track { height: 4px; background: rgba(255,255,255,0.07); border-radius: 999px; overflow: hidden; margin-bottom: 8px; }
+    .progress-fill { height: 100%; background: var(--accent); border-radius: 999px; width: 0; transition: width 0.9s ease; }
+    .progress-label { font-size: 12px; color: var(--muted); }
+
+    .email-row { display: flex; gap: 10px; margin-bottom: 12px; }
+    .email-input {
+      flex: 1;
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+      color: white;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .email-input::placeholder { color: var(--muted); }
+    .email-input:focus { border-color: rgba(249,115,22,0.4); }
+    .email-input.error { border-color: rgba(239,68,68,0.5); }
+
+    .submit-btn {
+      padding: 14px 22px;
+      border-radius: 12px;
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+      font-size: 15px;
+      font-family: inherit;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s, transform 0.15s;
+      box-shadow: 0 8px 24px rgba(249,115,22,0.28);
+    }
+    .submit-btn:hover { background: var(--accent-dark); transform: translateY(-1px); }
+
+    .form-note {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    .tg-note {
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .success-msg {
+      display: none;
+      background: rgba(34,197,94,0.08);
+      border: 1px solid rgba(34,197,94,0.2);
+      color: #86efac;
+      padding: 20px 28px;
+      border-radius: 16px;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    footer {
+      padding: 32px 20px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 48px; }
+      .tg-preview { transform: none; }
+      .deals-grid { grid-template-columns: 1fr; }
+      .how-grid { grid-template-columns: 1fr; }
+      .comp-grid { grid-template-columns: 1fr; }
+      .email-row { flex-direction: column; }
+    }
+    @media (max-width: 640px) {
+      .deals-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="ticker">⚠ Dnes sme našli 6 dealov pod trhovou cenou · Posledný: Ružinov –18% · pred 23 min</div>
-
 <nav>
   <div class="logo">Deal<span>Finder</span></div>
-  <div class="nav-right">
-    <a href="#pricing" class="nav-link">Cenník</a>
-    <a href="https://t.me/+FFtOQM508RRkMTVk" class="nav-link" target="_blank">Telegram (free)</a>
-    <a class="nav-cta" href="https://dealfinderalerts.gumroad.com/l/pwcgi" data-gumroad-overlay-checkout="true">Pošli mi prvý deal →</a>
-  </div>
+  <a href="#early-access" class="nav-pill">Early access →</a>
 </nav>
 
-<!-- HERO -->
+<!-- ── HERO ── -->
 <div class="hero">
-  <div class="hero-glow"></div>
-
-  <div class="hero-left">
-    <div class="hero-badge">
-      <span class="hero-badge-dot"></span>
-      Live · SK + CZ trh
+  <div class="hero-inner">
+    <div>
+      <div class="badge">
+        <span class="badge-dot"></span>
+        Datová výhoda pro realitní investory v ČR
+      </div>
+      <h1>Nehledejte inzeráty.<br/><em>Hledejte signály.</em></h1>
+      <p class="hero-desc">
+        DealFinder sleduje sreality.cz v reálném čase, porovnává každý byt s podobnými nemovitostmi a posílá Telegram alert, když se objeví nabídka výrazně pod tržním mediánem.
+      </p>
+      <div class="tg-live">
+        <span class="live-dot"></span>
+        Telegram alert do 5 minut od objavenia dealu
+      </div>
+      <div class="hero-btns">
+        <a href="#early-access" class="btn-primary">Chci přístup zdarma</a>
+        <a href="#deals" class="btn-ghost">Ukázka výstupů ↓</a>
+      </div>
     </div>
 
-    <h1>
-      Investori<br>
-      tieto dealy<br>
-      <em>už vidia.</em><br>
-      <span class="green">Ty zatiaľ nie.</span>
-    </h1>
+    <!-- Telegram preview -->
+    <div class="hero-card-wrap">
+      <div class="tg-preview">
+        <div class="tg-header">
+          <div class="tg-avatar">D</div>
+          <div>
+            <div class="tg-name">DealFinder Alerts</div>
+            <div class="tg-sub">bot</div>
+          </div>
+        </div>
+        <div class="tg-bubble">
+<span class="deal-pct">🔥 DEAL: −27% pod trhem</span>
 
-    <p class="hero-sub">
-      Keď niekto zverejní byt <strong>pod trhovou cenou</strong>, dostaneš Telegram alert
-      do 60 sekúnd. Zvyšok trhu to uvidí o hodiny neskôr — keď je neskoro.
+<strong>Prodej bytu 1+1 | 46 m²</strong>
+<span class="price-row">4 500 000 Kč</span>
+📊 97 826 Kč/m² vs medián 133 333 Kč/m²
+<span class="savings">💚 Ušetříš ~1 640 000 Kč vs trh</span>
+
+<span class="check">✅ Cihla</span>  <span class="check">✅ Balkón</span>
+<span class="check">✅ Přímý prodej (bez RK)</span>
+<span class="warn">⚠️ Původní stav</span>  <span class="warn">⚠️ Bez výtahu</span>
+
+<span class="conf-green">● 37 srovnání — silný signál</span>
+📍 Brno
+        </div>
+        <div class="tg-time">dnes 09:14 ✓✓</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── LIVE DEALS ── -->
+<section class="deals-section" id="deals">
+  <div class="container">
+    <div class="deals-header">
+      <div>
+        <div class="eyebrow">Výstupy systému</div>
+        <h2>Reálné dealy z posledního scanu</h2>
+        <p class="section-lead">Toto jsou skutečné výstupy DealFinderu — nabídky, které algoritmus označil jako podtržní.</p>
+      </div>
+      <div class="live-badge">
+        <span class="live-dot" style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block"></span>
+        Živá data ze sreality.cz
+      </div>
+    </div>
+
+    <div class="deals-grid">
+
+      <!-- Deal 1 – strongest -->
+      <div class="deal-card hot">
+        <div class="deal-top">
+          <div class="deal-pct-badge big">−27%</div>
+          <div class="conf-badge conf-green"><span class="conf-dot"></span> Silný signál</div>
+        </div>
+        <div class="deal-type">Byt 1+1 · 46 m²</div>
+        <div class="deal-title">Cihlový byt s balkónem, přímý prodej bez realitky</div>
+        <div class="deal-price">4 500 000 Kč</div>
+        <div class="deal-savings">↓ pod mediánem o ~1 640 000 Kč</div>
+        <div class="deal-meter">
+          <div class="deal-meter-row">
+            <span>97 826 Kč/m²</span>
+            <span style="color:var(--muted)">medián 133 333 Kč/m²</span>
+          </div>
+          <div class="meter-bar"><div class="meter-fill" style="width:73%"></div></div>
+        </div>
+        <div class="deal-tags">
+          <span class="deal-tag tag-good">✅ Cihla</span>
+          <span class="deal-tag tag-good">✅ Balkón</span>
+          <span class="deal-tag tag-good">✅ Bez RK</span>
+          <span class="deal-tag tag-warn">⚠️ Původní stav</span>
+          <span class="deal-tag tag-warn">⚠️ Bez výtahu</span>
+        </div>
+        <div class="deal-location">📍 Brno &nbsp;·&nbsp; 37 srovnání</div>
+      </div>
+
+      <!-- Deal 2 -->
+      <div class="deal-card hot">
+        <div class="deal-top">
+          <div class="deal-pct-badge big">−24%</div>
+          <div class="conf-badge conf-yellow"><span class="conf-dot"></span> Střední signál</div>
+        </div>
+        <div class="deal-type">Byt 4+kk · 97 m²</div>
+        <div class="deal-title">Rekonstruovaný byt, balkón, osobní vlastnictví</div>
+        <div class="deal-price">8 540 000 Kč</div>
+        <div class="deal-savings">↓ pod mediánem o ~2 700 000 Kč</div>
+        <div class="deal-meter">
+          <div class="deal-meter-row">
+            <span>88 041 Kč/m²</span>
+            <span style="color:var(--muted)">medián 116 234 Kč/m²</span>
+          </div>
+          <div class="meter-bar"><div class="meter-fill" style="width:76%"></div></div>
+        </div>
+        <div class="deal-tags">
+          <span class="deal-tag tag-good">✅ Po rekonstrukci</span>
+          <span class="deal-tag tag-good">✅ Balkón</span>
+          <span class="deal-tag tag-good">✅ Bez RK</span>
+          <span class="deal-tag tag-warn">⚠️ Panelák</span>
+          <span class="deal-tag tag-warn">⚠️ Bez parkování</span>
+        </div>
+        <div class="deal-location">📍 Praha 9 &nbsp;·&nbsp; 23 srovnání</div>
+      </div>
+
+      <!-- Deal 3 -->
+      <div class="deal-card hot">
+        <div class="deal-top">
+          <div class="deal-pct-badge big">−23%</div>
+          <div class="conf-badge conf-yellow"><span class="conf-dot"></span> Střední signál</div>
+        </div>
+        <div class="deal-type">Rodinný dům · 217 m² · pozemek 109 m²</div>
+        <div class="deal-title">Rodinný dům, přímý prodej, parkování</div>
+        <div class="deal-price">11 490 000 Kč</div>
+        <div class="deal-savings">↓ pod mediánem o ~3 400 000 Kč</div>
+        <div class="deal-meter">
+          <div class="deal-meter-row">
+            <span>52 949 Kč/m²</span>
+            <span style="color:var(--muted)">medián 68 644 Kč/m²</span>
+          </div>
+          <div class="meter-bar"><div class="meter-fill" style="width:77%"></div></div>
+        </div>
+        <div class="deal-tags">
+          <span class="deal-tag tag-good">✅ Parkování</span>
+          <span class="deal-tag tag-good">✅ Bez RK</span>
+          <span class="deal-tag tag-warn">⚠️ Původní stav</span>
+        </div>
+        <div class="deal-location">📍 Brno &nbsp;·&nbsp; 15 srovnání</div>
+      </div>
+
+      <!-- Deal 4 -->
+      <div class="deal-card">
+        <div class="deal-top">
+          <div class="deal-pct-badge">−19%</div>
+          <div class="conf-badge conf-yellow"><span class="conf-dot"></span> Střední signál</div>
+        </div>
+        <div class="deal-type">Byt 3+kk · 88 m²</div>
+        <div class="deal-title">Cihlový byt, osobní vlastnictví, Praha 7</div>
+        <div class="deal-price">14 017 270 Kč</div>
+        <div class="deal-savings">↓ pod mediánem o ~3 300 000 Kč</div>
+        <div class="deal-meter">
+          <div class="deal-meter-row">
+            <span>159 287 Kč/m²</span>
+            <span style="color:var(--muted)">medián 197 028 Kč/m²</span>
+          </div>
+          <div class="meter-bar"><div class="meter-fill" style="width:81%"></div></div>
+        </div>
+        <div class="deal-tags">
+          <span class="deal-tag tag-good">✅ Cihla</span>
+          <span class="deal-tag tag-good">✅ OV</span>
+          <span class="deal-tag tag-warn">⚠️ Původní stav</span>
+          <span class="deal-tag tag-warn">⚠️ Bez parkování</span>
+        </div>
+        <div class="deal-location">📍 Praha 7 &nbsp;·&nbsp; 28 srovnání</div>
+      </div>
+
+      <!-- Deal 5 -->
+      <div class="deal-card">
+        <div class="deal-top">
+          <div class="deal-pct-badge">−14%</div>
+          <div class="conf-badge conf-green"><span class="conf-dot"></span> Silný signál</div>
+        </div>
+        <div class="deal-type">Byt 3+1 · 102 m²</div>
+        <div class="deal-title">Po rekonstrukci, cihla, přímý prodej, Praha 2</div>
+        <div class="deal-price">16 450 000 Kč</div>
+        <div class="deal-savings">↓ pod mediánem o ~2 570 000 Kč</div>
+        <div class="deal-meter">
+          <div class="deal-meter-row">
+            <span>161 275 Kč/m²</span>
+            <span style="color:var(--muted)">medián 186 508 Kč/m²</span>
+          </div>
+          <div class="meter-bar"><div class="meter-fill" style="width:86%"></div></div>
+        </div>
+        <div class="deal-tags">
+          <span class="deal-tag tag-good">✅ Po rekonstrukci</span>
+          <span class="deal-tag tag-good">✅ Cihla</span>
+          <span class="deal-tag tag-good">✅ Bez RK</span>
+          <span class="deal-tag tag-warn">⚠️ Bez výtahu</span>
+          <span class="deal-tag tag-warn">⚠️ Družstevní</span>
+        </div>
+        <div class="deal-location">📍 Praha 2 &nbsp;·&nbsp; 39 srovnání</div>
+      </div>
+
+      <!-- Deal 6 -->
+      <div class="deal-card">
+        <div class="deal-top">
+          <div class="deal-pct-badge">−13%</div>
+          <div class="conf-badge conf-green"><span class="conf-dot"></span> Silný signál</div>
+        </div>
+        <div class="deal-type">Byt 3+kk · 76 m²</div>
+        <div class="deal-title">Novostavba, cihla, parkování, přímý prodej</div>
+        <div class="deal-price">10 600 000 Kč</div>
+        <div class="deal-savings">↓ pod mediánem o ~1 660 000 Kč</div>
+        <div class="deal-meter">
+          <div class="deal-meter-row">
+            <span>139 474 Kč/m²</span>
+            <span style="color:var(--muted)">medián 160 897 Kč/m²</span>
+          </div>
+          <div class="meter-bar"><div class="meter-fill" style="width:87%"></div></div>
+        </div>
+        <div class="deal-tags">
+          <span class="deal-tag tag-good">✅ Novostavba</span>
+          <span class="deal-tag tag-good">✅ Cihla</span>
+          <span class="deal-tag tag-good">✅ Parkování</span>
+          <span class="deal-tag tag-good">✅ Bez RK</span>
+        </div>
+        <div class="deal-location">📍 Praha 10 &nbsp;·&nbsp; 6 srovnání</div>
+      </div>
+
+    </div>
+
+    <div class="deals-more">
+      Toto je jen ukázka. Systém průběžně monitoruje sreality.cz a identifikuje <strong>desítky signálů denně</strong> — alerty chodí přímo do Telegramu.
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section>
+  <div class="container">
+    <div class="eyebrow">Jak to funguje</div>
+    <h2>Tři kroky od inzerátu k alertu</h2>
+    <p class="section-lead">DealFinder není portal. Je to analytická vrstva nad realitní inzercí.</p>
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-num">01</div>
+        <h4>Monitoring v reálném čase</h4>
+        <p>Systém průběžně sleduje sreality.cz. Nové nabídky a změny cen zachytí okamžitě — ne až za hodiny.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-num">02</div>
+        <h4>Cohort srovnání</h4>
+        <p>Každý byt se porovná se srovnatelnou skupinou — stejná lokalita, dispozice, stav, typ budovy. Žádné průměrování jablek s hruškami.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-num">03</div>
+        <h4>Deal Score + Telegram alert</h4>
+        <p>Pokud je nabídka výrazně pod mediánem, dostanete okamžitý alert s čísly, plusy a riziky — vše na jednom místě.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── COMPARISON ── -->
+<section style="background:var(--bg2)">
+  <div class="container">
+    <div class="eyebrow">Rozdíl</div>
+    <h2>Portál vám ukáže nabídku.<br/>DealFinder ukáže, proč dává smysl.</h2>
+    <div class="comp-grid">
+      <div class="comp-box">
+        <h4>Ruční procházení portálů <span class="label-chip chip-old">Starý způsob</span></h4>
+        <div class="comp-item"><span class="icon">❌</span> Stovky nabídek, žádný kontext</div>
+        <div class="comp-item"><span class="icon">❌</span> Těžké poznat, co je opravdu levné</div>
+        <div class="comp-item"><span class="icon">❌</span> Porovnávání podle pocitu</div>
+        <div class="comp-item"><span class="icon">❌</span> Price dropy snadno zapadnou</div>
+        <div class="comp-item"><span class="icon">❌</span> Dobré nabídky zmizí dřív, než je najdete</div>
+      </div>
+      <div class="comp-box highlight">
+        <h4>DealFinder <span class="label-chip chip-new">Váš edge</span></h4>
+        <div class="comp-item"><span class="icon">✅</span> Automatický monitoring trhu 24/7</div>
+        <div class="comp-item"><span class="icon">✅</span> Srovnání s podobnými nemovitostmi</div>
+        <div class="comp-item"><span class="icon">✅</span> Konkrétní číslo: −X% pod mediánem</div>
+        <div class="comp-item"><span class="icon">✅</span> Viditelné plusy i rizika každé nabídky</div>
+        <div class="comp-item"><span class="icon">✅</span> Telegram alert do 5 minut od nálezu</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="cta-section" id="early-access">
+  <div class="cta-inner">
+    <div class="eyebrow">Early access</div>
+    <h2>Hledám prvních 20 investorů.</h2>
+    <p class="section-lead">
+      Systém je v beta fázi — data se sbírají od května 2026. Čím déle běží, tím přesnější srovnání.<br/><br/>
+      Proto hledám prvních 20 investorů právě teď — dostanete přístup, když je trh ještě neobjevil.<br/>
+      <span style="font-size:15px;color:var(--muted)">Beta přístup zdarma, výměnou za zpětnou vazbu.</span>
     </p>
 
-    <div class="payment-box" id="waitlist">
-      <div class="pay-label">Early access · limitované miesta</div>
-
-      <div class="pay-price-row">
-        <span class="pay-price">€9</span>
-        <span class="pay-period">/mesiac</span>
-        <span class="pay-old">€29</span>
-      </div>
-      <div class="pay-contrast">1 deal = €10 000–50 000 zisk · ty platíš €9</div>
-
-      <ul class="pay-features">
-        <li>Real-time Telegram alert (do 60 sekúnd)</li>
-        <li>Deal Score – % pod trhom, okamžitý výpočet</li>
-        <li>SK + CZ trh v jednom prehľade</li>
-        <li>Zrušiteľné kedykoľvek, žiadne záväzky</li>
-      </ul>
-
-      <a class="btn-pay" href="https://dealfinderalerts.gumroad.com/l/pwcgi" data-gumroad-overlay-checkout="true">
-        Pošli mi prvý deal →
-      </a>
-      <p class="pay-guarantee">🔒 Gumroad · zabezpečená platba</p>
-
-      <div class="live-counter">
-        <span class="counter-num">47</span>
-        <span>ľudí sa zaregistrovalo</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- DEAL CARDS -->
-  <div class="hero-right">
-    <div class="proof-label">🔴 Live dealy nájdené dnes</div>
-
-    <div class="deal-card hot">
-      <div class="deal-card-top">
-        <span class="deal-score-badge">DEAL SCORE 91 · –18%</span>
-        <span class="deal-time">pred 23 min</span>
-      </div>
-      <div class="deal-address">Ružinovská 44, 3-izb., 72 m²</div>
-      <div class="deal-loc">Ružinov · Bratislava</div>
-      <div class="deal-nums">
-        <div class="dn"><span class="dn-val g">€196k</span><span class="dn-lbl">Inzerát</span></div>
-        <div class="dn"><span class="dn-val">€240k</span><span class="dn-lbl">Trh</span></div>
-        <div class="dn"><span class="dn-val g">–€44k</span><span class="dn-lbl">Potenciál</span></div>
-      </div>
-      <div class="tg-alert"><div class="tg-dot"></div>Telegram alert · 9:07:42</div>
+    <div class="urgency-row">
+      <div class="urgency-chip">🔴 Zbývá <span style="color:var(--accent);margin:0 4px">14 míst</span> z 20</div>
     </div>
 
-    <div class="deal-card">
-      <div class="deal-card-top">
-        <span class="deal-score-badge">DEAL SCORE 78 · –14%</span>
-        <span class="deal-time">pred 1h 14min</span>
+    <div class="progress-wrap">
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
       </div>
-      <div class="deal-address">Páričkova 18, 2-izb., 58 m²</div>
-      <div class="deal-loc">Nové Mesto · Bratislava</div>
-      <div class="deal-nums">
-        <div class="dn"><span class="dn-val g">€159k</span><span class="dn-lbl">Inzerát</span></div>
-        <div class="dn"><span class="dn-val">€185k</span><span class="dn-lbl">Trh</span></div>
-        <div class="dn"><span class="dn-val g">–€26k</span><span class="dn-lbl">Potenciál</span></div>
-      </div>
-      <div class="tg-alert"><div class="tg-dot"></div>Telegram alert · 7:53:18</div>
+      <div class="progress-label">6 investorů již přistoupilo</div>
     </div>
 
-    <div class="deal-card">
-      <div class="deal-card-top">
-        <span class="deal-score-badge">DEAL SCORE 74 · –12%</span>
-        <span class="deal-time">pred 2h 41min</span>
+    <div id="form-wrap">
+      <div class="email-row">
+        <input type="email" class="email-input" id="email-input" placeholder="váš@email.cz" autocomplete="email" />
+        <button class="submit-btn" onclick="handleSubmit()">Chci přístup</button>
       </div>
-      <div class="deal-address">Botanická 7, 2-izb., 62 m²</div>
-      <div class="deal-loc">Staré Mesto · Brno</div>
-      <div class="deal-nums">
-        <div class="dn"><span class="dn-val g">€198k</span><span class="dn-lbl">Inzerát</span></div>
-        <div class="dn"><span class="dn-val">€225k</span><span class="dn-lbl">Trh</span></div>
-        <div class="dn"><span class="dn-val g">–€27k</span><span class="dn-lbl">Potenciál</span></div>
-      </div>
-      <div class="tg-alert"><div class="tg-dot"></div>Telegram alert · 6:26:05</div>
-    </div>
-  </div>
-</div>
-
-<hr class="sep">
-
-<!-- PAIN -->
-<div class="pain-section">
-  <div class="pain-grid">
-    <div class="pain-box bad">
-      <div class="pain-box-label red">❌ Bez DealFinder</div>
-      <h3>Prídeš na inzerát.<br>Deal je preč.</h3>
-      <p>Realitky, investori a skúsení kupci refreshujú stránky celý deň. Keď si ty všimneš dobrý byt, niekto iný ho už volá.</p>
-
-      <div class="timeline" style="margin-top: 20px;">
-        <div class="tl-item">
-          <span class="tl-time">9:07</span>
-          <div class="tl-bar"><div class="tl-fill" style="width:5%;background:var(--accent)"></div></div>
-          <span class="tl-who you">DealFinder</span>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">9:12</span>
-          <div class="tl-bar"><div class="tl-fill" style="width:30%"></div></div>
-          <span class="tl-who">Investori</span>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">10:30</span>
-          <div class="tl-bar"><div class="tl-fill" style="width:70%"></div></div>
-          <span class="tl-who">Realitky</span>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">14:00</span>
-          <div class="tl-bar"><div class="tl-fill" style="width:100%"></div></div>
-          <span class="tl-who">Ty 😐</span>
-        </div>
-      </div>
-      <p style="margin-top:12px; font-size: 0.76rem; color: var(--accent2); font-family: var(--font-mono); letter-spacing: 0.02em;">→ Byt reserved od 9:42. Ty narazil o 14:00.</p>
-    </div>
-
-    <div class="pain-box">
-      <div class="pain-box-label green">✓ S DealFinder</div>
-      <h3>Alert dorazí.<br>Ty si prvý.</h3>
-      <p>Do 60 sekúnd od zverejnenia ti príde Telegram správa s Deal Score, cenou, a priamym linkom. Kým ostatní hľadajú, ty už voláš.</p>
-
-      <div style="margin-top: 22px; background: var(--surface2); border-radius: 10px; padding: 16px; font-size: 0.82rem; border: 1px solid var(--border);">
-        <div style="color: var(--text-dim); margin-bottom: 9px; font-family: var(--font-mono); font-size: 0.61rem; letter-spacing: 0.08em; text-transform: uppercase;">Telegram · 9:07:42</div>
-        <div style="color: var(--accent); font-family: var(--font-display); font-weight: 700; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px;">🔥 Deal Alert · Score 91</div>
-        <div style="color: var(--text); margin-bottom: 3px; font-size: 0.86rem;">Ružinovská 44, Bratislava</div>
-        <div style="color: var(--text-secondary); font-size: 0.8rem; font-weight: 300;">€196k · –18% pod trhom · –€44k potenciál</div>
-        <div style="margin-top: 10px; color: #2ca5e0; font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;">→ Zobraziť inzerát</div>
+      <p class="form-note">Bez spamu. Jen deal alerty a občas otázka na zpětnou vazbu.</p>
+      <div class="tg-note">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2L2 9.5l7 2.5M21.5 2L14 22l-5-10M21.5 2L9.5 12"/></svg>
+        Po registraci dostanete <strong style="color:var(--muted2);margin:0 3px">Telegram invite</strong> — alerty chodí tam, ne na email.
       </div>
     </div>
-  </div>
-</div>
 
-<!-- HOW IT WORKS -->
-<section class="hiw">
-  <div class="section-eyebrow">Ako to funguje</div>
-  <h2 class="section-title">Žiadna mágia.<br>Len rýchlosť.</h2>
-
-  <div class="steps-grid">
-    <div class="step">
-      <div class="step-num">01</div>
-      <span class="step-icon">🔍</span>
-      <h3>Scanujeme každú minútu</h3>
-      <p>Nehnuteľnosti.sk, Reality.sk, Sreality.cz — každú minútu. Žiadny inzerát nám neujde.</p>
-    </div>
-    <div class="step">
-      <div class="step-num">02</div>
-      <span class="step-icon">🧮</span>
-      <h3>Deal Score v sekunde</h3>
-      <p>Každý byt porovnáme s trhovou cenou v danej lokalite. –18% pod trhom = kup to.</p>
-    </div>
-    <div class="step">
-      <div class="step-num">03</div>
-      <span class="step-icon">⚡</span>
-      <h3>Telegram alert — prvý si ty</h3>
-      <p>Do 60 sekúnd máš správu. Zvyšok trhu to uvidí neskôr — keď je rezervovaný.</p>
+    <div class="success-msg" id="success-msg">
+      ✅ Skvělé — brzy dostanete Telegram invite s prvním deal alertem.<br/>
+      <span style="font-size:13px;color:#4ade80;opacity:0.7">Díky za důvěru. Napíšeme vám do 24 hodin.</span>
     </div>
   </div>
 </section>
-
-<!-- PRICING -->
-<section class="pricing" id="pricing">
-  <div class="pricing-top">
-    <div>
-      <div class="section-eyebrow">Cenník</div>
-      <h2 class="section-title" style="margin-bottom: 0;">Jeden deal.<br>Rok zaplatený.</h2>
-    </div>
-    <div class="pricing-contrast">
-      Priemerný deal = <strong>€20 000–50 000</strong> pod trhom. Mesačné predplatné? <strong>€9</strong>.
-    </div>
-  </div>
-
-  <div class="pricing-grid">
-    <div class="plan">
-      <div class="plan-name">Scout · Free</div>
-      <div class="plan-price">€0</div>
-      <div class="plan-period">navždy zadarmo</div>
-      <div class="plan-roi" style="color: var(--text-dim);">Dealy vidíš neskoro</div>
-      <ul class="plan-features">
-        <li>Telegram kanál (oneskorené)</li>
-        <li class="off">Bez Deal Score</li>
-        <li class="off">Len vybrané dealy</li>
-        <li class="off">Bez SK+CZ filtra</li>
-      </ul>
-      <a class="btn-outline" href="https://t.me/+o0litA5fAx4zMjlk" target="_blank">Pripojiť sa zadarmo →</a>
-    </div>
-
-    <div class="plan featured">
-      <div class="plan-name">Investor · Core</div>
-      <div class="plan-price">€9</div>
-      <div class="plan-period">/mesiac · zrušiteľné kedykoľvek</div>
-      <div class="plan-roi">1 deal = +10 000€. Ty platíš 9€.</div>
-      <ul class="plan-features">
-        <li>Real-time Telegram alerty</li>
-        <li>Deal Score pre každý inzerát</li>
-        <li>SK + CZ trh</li>
-        <li>Filtrovanie lokalít</li>
-      </ul>
-      <a class="btn-accent" href="https://dealfinderalerts.gumroad.com/l/pwcgi" data-gumroad-overlay-checkout="true">Pošli mi prvý deal →</a>
-    </div>
-
-    <div class="plan">
-      <div class="plan-name">Power User <span class="coming-soon-badge">Čoskoro</span></div>
-      <div class="plan-price">€29</div>
-      <div class="plan-period">/mesiac</div>
-      <div class="plan-roi" style="color:var(--text-dim);">Pre serióznych investorov</div>
-      <ul class="plan-features">
-        <li>Všetko z Core</li>
-        <li>Priority alerty (prvý v rade)</li>
-        <li>Export CSV / API prístup</li>
-        <li>Dedikovaný Discord</li>
-      </ul>
-      <button class="btn-disabled" disabled>Čoskoro k dispozícii</button>
-    </div>
-  </div>
-</section>
-
-<!-- FINAL CTA -->
-<div class="final-cta">
-  <h2>
-    Prichádzaš o dealy<br>
-    <em>každý deň.</em><br>
-    <span class="green">Dnes to zastavíš.</span>
-  </h2>
-  <p>Prvý mesiac za €9. Zrušíš kedykoľvek. Žiadne výhovorky.</p>
-  <a class="final-btn" href="https://dealfinderalerts.gumroad.com/l/pwcgi" data-gumroad-overlay-checkout="true">
-    Pošli mi prvý deal →
-  </a>
-</div>
 
 <footer>
-  <div class="logo">Deal<span>Finder</span></div>
-  <div class="footer-links">
-    <a href="https://t.me/+FFtOQM508RRkMTVk" class="footer-tg" target="_blank">
-      ✈ Telegram kanál (free)
-    </a>
-    <span class="footer-copy">© 2026 DealFinder · SK + CZ trh · support@dealfinder.sk</span>
-  </div>
+  DealFinder © 2026 — investor intelligence nad realitní inzercí
 </footer>
 
-<!-- MODAL -->
-<div class="modal-overlay" id="modalOverlay" onclick="closeModalOnBg(event)">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-
-    <div id="modalForm">
-      <h3>Zadarmo na Telegram</h3>
-      <div class="modal-sub">Nechaj email a pošleme ti link · žiadna platba</div>
-
-      <input type="text" class="modal-input" id="modalName" placeholder="Meno">
-      <input type="email" class="modal-input" id="modalEmail" placeholder="tvoj@email.sk">
-
-      <button class="btn-pay" id="modalSubmitBtn" onclick="handleModalSubmit()">
-        Zaregistrovať sa zadarmo →
-      </button>
-      <p class="modal-note">Bez spamu · kedykoľvek sa odhlásiš</p>
-
-      <div class="tg-cta-row">
-        Alebo priamo:
-        <a href="https://t.me/+FFtOQM508RRkMTVk" target="_blank">→ Otvoriť Telegram kanál</a>
-      </div>
-    </div>
-
-    <div class="success-state" id="modalSuccess">
-      <span class="check">✅</span>
-      <h4>Zapísaný!</h4>
-      <p>Zapísali sme ťa na zoznam.<br>Čoskoro dostaneš link na Telegram kanál.<br><br>
-        Alebo sa pripoj hneď: <a href="https://t.me/+FFtOQM508RRkMTVk" target="_blank" style="color:var(--accent)">t.me/dealfinder</a>
-      </p>
-    </div>
-  </div>
-</div>
-
 <script>
-  function openModal(e) {
-    if (e) e.preventDefault();
-    document.getElementById('modalOverlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
-    setTimeout(() => document.getElementById('modalName').focus(), 200);
-  }
-  function closeModal() {
-    document.getElementById('modalOverlay').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-  function closeModalOnBg(e) {
-    if (e.target === document.getElementById('modalOverlay')) closeModal();
-  }
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  setTimeout(function() {
+    var fill = document.getElementById('progress-fill');
+    if (fill) fill.style.width = '30%';
+  }, 500);
 
-  async function handleModalSubmit() {
-    const name = document.getElementById('modalName').value.trim();
-    const email = document.getElementById('modalEmail').value.trim();
-    const btn = document.getElementById('modalSubmitBtn');
-
-    if (!name) {
-      document.getElementById('modalName').style.borderColor = 'rgba(255,60,60,0.5)';
-      document.getElementById('modalName').focus();
+  function handleSubmit() {
+    var input = document.getElementById('email-input');
+    var email = input.value.trim();
+    if (!email || !email.includes('@') || !email.includes('.')) {
+      input.classList.add('error');
+      input.focus();
       return;
     }
-    if (!email || !email.includes('@')) {
-      document.getElementById('modalEmail').style.borderColor = 'rgba(255,60,60,0.5)';
-      document.getElementById('modalEmail').focus();
-      return;
-    }
+    input.classList.remove('error');
+    document.getElementById('form-wrap').style.display = 'none';
+    document.getElementById('success-msg').style.display = 'block';
+    // fetch('https://formspree.io/f/YOUR_ID', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({ email: email })
+    // });
+  }
 
-    document.getElementById('modalName').style.borderColor = '';
-    document.getElementById('modalEmail').style.borderColor = '';
-
-    btn.textContent = 'Odosielam...';
-    btn.disabled = true;
-    btn.style.opacity = '0.7';
-
-    try {
-      const res = await fetch('https://formspree.io/f/mzdyknee', {
-        method: 'POST',
-        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email })
+  document.addEventListener('DOMContentLoaded', function() {
+    var input = document.getElementById('email-input');
+    if (input) {
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') handleSubmit();
+        this.classList.remove('error');
       });
-
-      if (res.ok) {
-        document.getElementById('modalForm').style.display = 'none';
-        document.getElementById('modalSuccess').style.display = 'block';
-        setTimeout(closeModal, 4000);
-      } else { throw new Error('error'); }
-    } catch (err) {
-      btn.textContent = 'Chyba – skús znova';
-      btn.disabled = false;
-      btn.style.opacity = '1';
-      btn.style.background = 'var(--accent2)';
-      btn.style.color = '#fff';
     }
-  }
-
-  // Scroll fade-in
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(el => {
-      if (el.isIntersecting) {
-        el.target.style.opacity = '1';
-        el.target.style.transform = 'translateY(0)';
-      }
-    });
-  }, { threshold: 0.06 });
-
-  document.querySelectorAll('.step, .plan, .pain-box, .deal-card').forEach((el, i) => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(16px)';
-    el.style.transition = `opacity 0.4s ${i * 0.06}s ease, transform 0.4s ${i * 0.06}s ease`;
-    obs.observe(el);
   });
 </script>
 </body>
