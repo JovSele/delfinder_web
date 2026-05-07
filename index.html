@@ -952,11 +952,11 @@
     input.classList.remove('error');
     document.getElementById('form-wrap').style.display = 'none';
     document.getElementById('success-msg').style.display = 'block';
-    // fetch('https://formspree.io/f/YOUR_ID', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ email: email })
-    // });
+    fetch('https://formspree.io/f/mzdyknee', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email })
+    });
   }
 
   document.addEventListener('DOMContentLoaded', function() {
