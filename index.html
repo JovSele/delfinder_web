@@ -949,23 +949,38 @@
       return;
     }
     input.classList.remove('error');
-    document.getElementById('form-wrap').style.display = 'none';
-    document.getElementById('success-msg').style.display = 'block';
-    fetch('https://formspree.io/f/mzdyknee', {
+  
+    var btn = document.querySelector('.submit-btn');
+    btn.textContent = 'Odesílám...';
+    btn.disabled = true;
+  
+    fetch('https://connect.mailerlite.com/api/subscribers', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email })
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer VLOZ_SEM_NOVY_API_KEY'
+      },
+      body: JSON.stringify({
+        email: email,
+        groups: ['186810517723022493']
+      })
+    })
+    .then(function(res) {
+      if (res.ok || res.status === 201 || res.status === 200) {
+        document.getElementById('form-wrap').style.display = 'none';
+        document.getElementById('success-msg').style.display = 'block';
+      } else {
+        btn.textContent = 'Chci přístup';
+        btn.disabled = false;
+        alert('Něco se pokazilo, zkuste to znovu.');
+      }
+    })
+    .catch(function() {
+      btn.textContent = 'Chci přístup';
+      btn.disabled = false;
+      alert('Chyba připojení, zkuste to znovu.');
     });
   }
-
-  document.addEventListener('DOMContentLoaded', function() {
-    var input = document.getElementById('email-input');
-    if (input) {
-      input.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') handleSubmit();
-        this.classList.remove('error');
-      });
-    }
   });
 </script>
 </body>
