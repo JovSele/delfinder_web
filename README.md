@@ -1,4 +1,7 @@
 # delfinder_web
+
+https://delfinder.vercel.app/
+
 https://t.me/+FFtOQM508RRkMTVk
 <!DOCTYPE html>
 <html lang="sk">
