@@ -955,37 +955,9 @@
 
 <script>
   setTimeout(function() {
-    var fill = document.getElementById('progress-fill');
-    if (fill) fill.style.width = '30%';
+    var fill = document.getElementById("progress-fill");
+    if (fill) fill.style.width = "30%";
   }, 500);
-
-  function handleSubmit() {
-    var input = document.getElementById('email-input');
-    var email = input.value.trim();
-    if (!email || !email.includes('@') || !email.includes('.')) {
-      input.classList.add('error');
-      input.focus();
-      return;
-    }
-    input.classList.remove('error');
-    document.getElementById('form-wrap').style.display = 'none';
-    document.getElementById('success-msg').style.display = 'block';
-    fetch('https://formspree.io/f/mzdyknee', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email })
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', function() {
-    var input = document.getElementById('email-input');
-    if (input) {
-      input.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') handleSubmit();
-        this.classList.remove('error');
-      });
-    }
-  });
 </script>
 </body>
 </html>
