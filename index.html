@@ -615,6 +615,10 @@
     .ml-embedded input[type="submit"], .ml-embedded button[type="submit"] { background: #f97316 !important; border: none !important; border-radius: 12px !important; color: white !important; font-weight: 700 !important; font-size: 15px !important; padding: 14px 24px !important; width: 100% !important; margin-top: 10px !important; cursor: pointer !important; box-shadow: 0 8px 24px rgba(249,115,22,0.28) !important; font-family: inherit !important; }
     .ml-embedded input[type="submit"]:hover, .ml-embedded button[type="submit"]:hover { background: #ea580c !important; }
     .ml-embedded .ml-form-successBody { background: rgba(34,197,94,0.08) !important; border: 1px solid rgba(34,197,94,0.2) !important; border-radius: 16px !important; color: #86efac !important; padding: 20px !important; }
+    .ml-embedded * { color: white !important; }
+    .ml-embedded .ml-form-embedBody { background: transparent !important; }
+    .ml-embedded .ml-form-checkboxRow a { color: #f97316 !important; }
+    .ml-embedded p, .ml-embedded span, .ml-embedded div, .ml-embedded label { color: white !important; background: transparent !important; }
     }
   </style>
 </head>
@@ -985,3 +989,30 @@
 </script>
 </body>
 </html>
+<script>
+  function styleMLForm() {
+    var wrap = document.querySelector('.ml-embedded');
+    if (!wrap) return;
+    wrap.querySelectorAll('h4, p, label, .ml-form-embedHeader').forEach(function(el) {
+      el.style.display = 'none';
+    });
+    wrap.querySelectorAll('input[type="email"]').forEach(function(el) {
+      el.style.cssText = 'background:rgba(255,255,255,0.05)!important;border:1px solid rgba(255,255,255,0.12)!important;border-radius:12px!important;color:white!important;font-size:15px!important;padding:14px 18px!important;width:100%!important;box-sizing:border-box!important;font-family:inherit!important;margin-bottom:10px!important;';
+      el.setAttribute('placeholder', 'váš@email.cz');
+    });
+    wrap.querySelectorAll('input[type="submit"], button[type="submit"]').forEach(function(el) {
+      el.style.cssText = 'background:#f97316!important;border:none!important;border-radius:12px!important;color:white!important;font-weight:700!important;font-size:15px!important;padding:14px 24px!important;width:100%!important;cursor:pointer!important;box-shadow:0 8px 24px rgba(249,115,22,0.28)!important;font-family:inherit!important;';
+      if (el.value === 'Subscribe') el.value = 'Chci přístup';
+    });
+    wrap.querySelectorAll('.ml-form-embedWrapper, .ml-form-embedBody, .ml-block-form, .ml-form-embedContent').forEach(function(el) {
+      el.style.cssText = 'background:transparent!important;border:none!important;box-shadow:none!important;padding:0!important;margin:0!important;';
+    });
+  }
+  var mlObserver = new MutationObserver(function() { styleMLForm(); });
+  document.addEventListener('DOMContentLoaded', function() {
+    mlObserver.observe(document.body, { childList: true, subtree: true });
+  });
+  window.addEventListener('load', styleMLForm);
+  setTimeout(styleMLForm, 800);
+  setTimeout(styleMLForm, 2000);
+</script>
