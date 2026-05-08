@@ -6,6 +6,16 @@
   <title>DealFinder — Datová výhoda pro realitní investory</title>
   <meta name="description" content="DealFinder sleduje realitní trh v reálném čase a upozorňuje investory na podtržní příležitosti." />
 
+  <!-- MailerLite Universal -->
+  <script>
+    (function(w,d,e,u,f,l,n){w[f]=w[f]||function(){(w[f].q=w[f].q||[])
+    .push(arguments);},l=d.createElement(e),l.async=1,l.src=u,
+    n=d.getElementsByTagName(e)[0],n.parentNode.insertBefore(l,n);})
+    (window,document,'script','https://assets.mailerlite.com/js/universal.js','ml');
+    ml('account', '1748306');
+  </script>
+  <!-- End MailerLite Universal -->
+
   <style>
     :root {
       --bg: #0a0f1e;
@@ -912,20 +922,11 @@
     </div>
 
     <div id="form-wrap">
-      <div class="email-row">
-        <input type="email" class="email-input" id="email-input" placeholder="váš@email.cz" autocomplete="email" />
-        <button class="submit-btn" onclick="handleSubmit()">Chci přístup</button>
-      </div>
-      <p class="form-note">Bez spamu. Jen deal alerty a občas otázka na zpětnou vazbu.</p>
-      <div class="tg-note">
+      <div class="ml-embedded" data-form="UFKEE5"></div>
+      <div class="tg-note" style="margin-top:16px">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2L2 9.5l7 2.5M21.5 2L14 22l-5-10M21.5 2L9.5 12"/></svg>
         Po registraci dostanete <strong style="color:var(--muted2);margin:0 3px">Telegram invite</strong> — alerty chodí tam, ne na email.
       </div>
-    </div>
-
-    <div class="success-msg" id="success-msg">
-      ✅ Skvělé — brzy dostanete Telegram invite s prvním deal alertem.<br/>
-      <span style="font-size:13px;color:#4ade80;opacity:0.7">Díky za důvěru. Napíšeme vám do 24 hodin.</span>
     </div>
   </div>
 </section>
@@ -949,38 +950,23 @@
       return;
     }
     input.classList.remove('error');
-  
-    var btn = document.querySelector('.submit-btn');
-    btn.textContent = 'Odesílám...';
-    btn.disabled = true;
-  
-    fetch('https://connect.mailerlite.com/api/subscribers', {
+    document.getElementById('form-wrap').style.display = 'none';
+    document.getElementById('success-msg').style.display = 'block';
+    fetch('https://formspree.io/f/mzdyknee', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI0IiwianRpIjoiODliNzdlZjMzZTM3MzA3YTdkZDJhYjQ4OGUxNTAzOWQ3ZTA3MzQ5Zjc0ODBiZWFmNzc0ZDQ5OWZjODcxM2I5NTQ3OGM3ZDlmMmU5Yzg3NTEiLCJpYXQiOjE3NzgxNTY2NTQuOTgwMDg5LCJuYmYiOjE3NzgxNTY2NTQuOTgwMDkyLCJleHAiOjQ5MzM4MzAyNTQuOTc1NTUxLCJzdWIiOiIxNzYyMzIyIiwic2NvcGVzIjpbXX0.vY1r-xmUYfMGRcU_16LkTY2BnJz0p35xlnE36zAbdWzfuWq7LKSEgOvN7-uwK2oBracFaTznN3sb14omR2HWfKIa8LO10sfEXXTHxMwqgD7_PjyKTKfOnD2ExCysQD8al4XTB9OIC5EN6S0Y6PZPj0V7gYD7JyxHg2ynyYhGVldGoAeA1fShunvZt7TheblSv6yfBLCqocMg31JPvln7xVtGmyEi76Bb-c9f36gqNpdiMpLMze4FQ4axTNZ5nklq_XryA_8GbO3dKBqTaXP2KM5SH8t9YbsZOMU-wSebAlQA91tevtwkct4u70PvYlUDS4i3Zwd7YBqXdgHwiLXpb3vKjvvxcJO2wNH7yc1ck0DUJMmuDidBLcKSnzb1TdsafkosNQcmhQWlzuvn2R-14fu7dfwaebot3ViEsv4vVkhx_g0wlJho7ITNdsjqHbsENseAa_jAbQLJQgXTsWYGmEKREic3bALttc7QlXbDA-Uwxg2gkMHWMlexFMaIcdk1JG9xW71UqcBE_rG3W_yJuGqwtbNLNrIQvLIi6cfD6D0TtyRhY7Q3WV5b35Yen3gWrUvJI7rdRmjVs1MU1NHNvHfAX2mX_KJUpHuv0h_PdXhQS7jXQWf6Sl1594rXcJpFQWOMBOoCl6MoS3GQcIDQd5oq78HqPpaqSDjBDbMXMU8'
-      },
-      body: JSON.stringify({
-        email: email,
-        groups: ['186810517723022493']
-      })
-    })
-    .then(function(res) {
-      if (res.ok || res.status === 201 || res.status === 200) {
-        document.getElementById('form-wrap').style.display = 'none';
-        document.getElementById('success-msg').style.display = 'block';
-      } else {
-        btn.textContent = 'Chci přístup';
-        btn.disabled = false;
-        alert('Něco se pokazilo, zkuste to znovu.');
-      }
-    })
-    .catch(function() {
-      btn.textContent = 'Chci přístup';
-      btn.disabled = false;
-      alert('Chyba připojení, zkuste to znovu.');
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email })
     });
   }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var input = document.getElementById('email-input');
+    if (input) {
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') handleSubmit();
+        this.classList.remove('error');
+      });
+    }
   });
 </script>
 </body>
